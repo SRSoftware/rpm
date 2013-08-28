@@ -38,7 +38,8 @@ function head(){ ?>
 <?}
 
 function foot(){ ?>
-	// footer html/closure goes here
+	</body>
+</html>
 <?php }
 
 function form(){ ?>
