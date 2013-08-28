@@ -43,8 +43,10 @@ function foot(){ ?>
 <?php }
 
 function form(){ ?>
-	<button type="submit" class="btn btn-danger">Submit</button>
-        <form class="form" role="form">
+
+        <form class="form" role="form" method="POST" action=".">
+	
+		<button type="submit" class="btn btn-danger">Submit</button>
                 <script language="javascript" src="jquery/jquery-2.0.3.min.js" />
                 <script language="javascript">
                         alert("foo");
@@ -79,8 +81,13 @@ function form(){ ?>
 
 
 function resultsStored(){
-	if (!isset($_POST['some_necessary_input_field'])) return false;
+	if (!isset($_POST['lost'])) return false;
 	
+	print "Content of \$_POST:<pre><code>\n";
+	print_r($_POST);
+	print "</code></pre>";
+
+	return true;
 	// store results here, don't forget to use mysql_real_escape_string for text arguments
 }
 
