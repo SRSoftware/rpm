@@ -21,7 +21,20 @@ function warn($message){
 }
 
 function head(){ ?>
-	// head html goes here
+        <!DOCTYPE html>
+        <html lang="en">
+                <head> 
+                        <title>Bootstrap 101 Template</title>
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" />
+                        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+                        <!--[if lt IE 9]>
+                                <script src="bootstrap/js/html5shiv.js"></script>
+                                <script src="bootstrap/js/respond.min.js"></script>
+                        <![endif]-->
+                </head>
+        <body>
+        <h1>Rock Paper Mensa</h1>
 <?}
 
 function foot(){ ?>
