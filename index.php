@@ -43,7 +43,38 @@ function foot(){ ?>
 <?php }
 
 function form(){ ?>
-	// web form goes here
+	<button type="submit" class="btn btn-danger">Submit</button>
+        <form class="form" role="form">
+                <script language="javascript" src="jquery/jquery-2.0.3.min.js" />
+                <script language="javascript">
+                        alert("foo");
+                </script>
+
+                <div class="row" id="template">
+                        <div class="col-lg-7"><input name="name" placeholder="Spielername" style="width: 60%" /></div>
+                        <div class="col-lg-2"><input name="played" type="checkbox" /></div>
+                        <div class="col-lg-2"><input name="lost"   type="radio" /></div>
+                </div>
+
+                <div class="row">
+                        <div class="col-lg-7">Hans Wurst</div>
+                        <div class="col-lg-2"><input name="played" type="checkbox" /></div>
+                        <div class="col-lg-2"><input name="lost"   type="radio" /></div>
+                </div>
+
+                <div class="row">
+                        <div class="col-lg-7">Peter Pan</div>
+                        <div class="col-lg-2"><input name="played" type="checkbox" /></div>
+                        <div class="col-lg-2"><input name="lost"   type="radio" /></div>
+                </div>
+
+                <div class="row">
+                        <div class="col-lg-7">Gerda Gotenbaum</div>
+                        <div class="col-lg-2"><input name="played" type="checkbox" /></div>
+                        <div class="col-lg-2"><input name="lost"   type="radio" /></div>
+                </div>
+        </form>
+
 <?php }
 
 
