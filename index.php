@@ -162,9 +162,11 @@ function resultsStored(){
 function simpleStat(){
 	global $mysqli;
 	$res=$mysqli->query("SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY name");
+	?> <p><br/><br/> <?php
 	while ($row=$res->fetch_assoc()){
 		print $row['name']." lost ".$row['games']." games, so far.<br/>";
 	}
+       ?> </p><?php
 }
 
 head();
@@ -175,10 +177,11 @@ if ($mysqli===false) warnDB();
 
 if (resultsStored()){
 	print "Results stored in database.<br/>";
-	simpleStat();
 } else {
 	print form();
 }
+
+simpleStat();
 
 foot();
 
