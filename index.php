@@ -107,13 +107,39 @@ function createNewPlayers(){
 	if ($changed) $_POST['played']=$played;
 }
 
+function createGame(){
+  global $mysqli;
 
+  $loserId=$_POST['lost'];
+  $comment=null;
+  if (isset($_POST['comment'])) $comment=$_POST['comment'];
+
+  $query=$mysqli->prepare("INSERT INTO games (gid, date, uid, comments) VALUES (0, NOW(), ?, ?)");
+  $query->bind_param('is',$loserId,$comment);
+  $query->execute();
+  $query->close();
+  return $mysqli->insert_id;
+}
+
+function assignPlayers($game){
+  global $mysqli;
+
+  $query=$mysqli->prepare("INSERT INTO user_games (uid, gid) VALUES (?,?)");
+  foreach ($_POST['played'] as $player){
+	$query->bind_param('ii',$player,$game);
+	$query->execute();
+  }
+  $query->close();
+}
 
 function resultsStored(){
 	if (!isset($_POST['lost'])) return false;
 	
 	createNewPlayers();
-	createGame();
+	$game=createGame();
+	assignPlayers($game);
+
+	print "Game ".$game;
 	
 	print "Content of \$_POST:<pre><code>\n";
 	print_r($_POST);
