@@ -13,7 +13,7 @@ function dbConnection(){
         $mysqli->query("CREATE TABLE games (gid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,date DATE,uid INT, comments TEXT)");
         $mysqli->query("CREATE TABLE user_games (uid INT NOT NULL, gid INT NOT NULL, PRIMARY KEY(uid,gid))");
 
-        return true;
+        return $mysqli;
 }
 
 function warn($message){
@@ -85,29 +85,40 @@ function form(){
 <?php }
 
 function createPlayer($name){
-	echo "createPlayer ".$name;
-	die(-1);
+	global $mysqli;
+	$query=$mysqli->prepare("INSERT INTO users VALUES (0, ?)");
+	$query->bind_param("s",$name);
+	$query->execute();
+	$query->close();
+	return $mysqli->insert_id;
 }
 
 function createNewPlayers(){
 	$played=$_POST['played'];
-	foreach ($played as $player){
+	$changed=false;
+	foreach ($played as $number => $player){
 		if (!is_numeric($player)){
 			$id=createPlayer($player);
+			$played[$number]=$id;
+			$changed=true;
 			if ($_POST['lost']==$player) $_POST['lost']=$id;
 		}
 	}
+	if ($changed) $_POST['played']=$played;
 }
+
 
 
 function resultsStored(){
 	if (!isset($_POST['lost'])) return false;
 	
+	createNewPlayers();
+	createGame();
+	
 	print "Content of \$_POST:<pre><code>\n";
 	print_r($_POST);
 	print "</code></pre>";
 
-	createNewPlayers();
 
 	return true;
 	// store results here, don't forget to use mysql_real_escape_string for text arguments
@@ -115,7 +126,9 @@ function resultsStored(){
 
 head();
 
-if (!dbConnection()) warnDB();
+$mysqli=dbConnection();
+
+if ($mysqli===false) warnDB();
 
 if (resultsStored()){
 	print "Results stored in database.";
