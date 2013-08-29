@@ -72,16 +72,31 @@ function form(){
   <div class="row">
     <div class="col-lg-7">Hans Wurst</div>
     <div class="col-lg-2">
-      <input name="played[]" type="checkbox" value="Hans Wurst"
+      <input name="played[]" type="checkbox" value="1"
 	     onchange="onCheckbox(this)" />
     </div>
     <div class="col-lg-2">
-      <input name="lost" type="radio" value="Hans Wurst" disabled
+      <input name="lost" type="radio" value="1" disabled
 	     onchange="onRadio(this)"/>
     </div>
   </div>
 </form>
 <?php }
+
+function createPlayer($name){
+	echo "createPlayer ".$name;
+	die(-1);
+}
+
+function createNewPlayers(){
+	$played=$_POST['played'];
+	foreach ($played as $player){
+		if (!is_numeric($player)){
+			$id=createPlayer($player);
+			if ($_POST['lost']==$player) $_POST['lost']=$id;
+		}
+	}
+}
 
 
 function resultsStored(){
@@ -90,6 +105,8 @@ function resultsStored(){
 	print "Content of \$_POST:<pre><code>\n";
 	print_r($_POST);
 	print "</code></pre>";
+
+	createNewPlayers();
 
 	return true;
 	// store results here, don't forget to use mysql_real_escape_string for text arguments
