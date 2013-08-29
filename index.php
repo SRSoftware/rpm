@@ -52,6 +52,8 @@ function foot(){ ?>
 }
 
 function form(){
+	global $mysqli;
+
 ?><form class="form" role="form" method="POST" action=".">
   <button type="submit" class="btn" disabled>Submit</button>
 
@@ -69,20 +71,28 @@ function form(){
 	     onchange="onRadio(this)"/>
     </div>
   </div>
-  
+ 
+<?php
+  $players=$mysqli->query("SELECT uid,name FROM users"); // alter here to order with respect to number of games played
+
+  while ($player= $players->fetch_assoc()){ ?> 
   <div class="row">
-    <div class="col-lg-7">Hans Wurst</div>
+    <div class="col-lg-7"><?php print $player['name']; ?></div>
     <div class="col-lg-2">
-      <input name="played[]" type="checkbox" value="1"
-	     onchange="onCheckbox(this)" />
+<?php printf(
+      '<input name="played[]" type="checkbox" value="%d" onchange="onCheckbox(this)" />',
+						 $player['uid']); ?>
     </div>
     <div class="col-lg-2">
-      <input name="lost" type="radio" value="1" disabled
-	     onchange="onRadio(this)"/>
+<?php printf(
+      '<input name="lost" type="radio" value="%d" disabled onchange="onRadio(this)"/>',
+					$player['uid']); ?>
     </div>
   </div>
 </form>
-<?php }
+<?php 	} // end while
+
+}
 
 function createPlayer($name){
 	global $mysqli;
