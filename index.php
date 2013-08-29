@@ -89,10 +89,12 @@ function form(){
 					$player['uid']); ?>
     </div>
   </div>
+<?php   } // end while
+?>
 </form>
-<?php 	} // end while
+<?php
 
-}
+} // function
 
 function createPlayer($name){
 	global $mysqli;
@@ -149,15 +151,20 @@ function resultsStored(){
 	$game=createGame();
 	assignPlayers($game);
 
-	print "Game ".$game;
-	
-	print "Content of \$_POST:<pre><code>\n";
+/*	print "Content of \$_POST:<pre><code>\n";
 	print_r($_POST);
-	print "</code></pre>";
+	print "</code></pre>"; */
 
 
 	return true;
-	// store results here, don't forget to use mysql_real_escape_string for text arguments
+}
+
+function simpleStat(){
+	global $mysqli;
+	$res=$mysqli->query("SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY name");
+	while ($row=$res->fetch_assoc()){
+		print $row['name']." lost ".$row['games']." games, so far.<br/>";
+	}
 }
 
 head();
@@ -167,7 +174,8 @@ $mysqli=dbConnection();
 if ($mysqli===false) warnDB();
 
 if (resultsStored()){
-	print "Results stored in database.";
+	print "Results stored in database.<br/>";
+	simpleStat();
 } else {
 	print form();
 }
