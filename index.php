@@ -5,12 +5,13 @@ require_once('db.php'); // set $database_host, $database_port, $database_name, a
 
 function dbConnection(){
         global $database_host, $database_port, $database_name, $database_pass;
-        $conn=mysql_connect($database_host.":".$database_port,$database_name,$database_pass);
-        if ($conn === false) return false;
-        mysql_select_db($database_name,$conn);
-        mysql_query("CREATE TABLE users (uid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,name TEXT)");
-        mysql_query("CREATE TABLE games (gid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,date DATE,uid INT, comments TEXT)");
-        mysql_query("CREATE TABLE user_games (uid INT NOT NULL, gid INT NOT NULL, PRIMARY KEY(uid,gid))");
+
+	$mysqli = new mysqli($database_host, $database_name, $database_pass, $database_name,$database_port);
+	if ($mysqli->connect_errno) return false;
+
+        $mysqli->query("CREATE TABLE users (uid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,name TEXT)");
+        $mysqli->query("CREATE TABLE games (gid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,date DATE,uid INT, comments TEXT)");
+        $mysqli->query("CREATE TABLE user_games (uid INT NOT NULL, gid INT NOT NULL, PRIMARY KEY(uid,gid))");
 
         return true;
 }
