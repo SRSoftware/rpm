@@ -1,6 +1,8 @@
 <?php
 
-require_once('db.php'); // set $database_host, $database_port, $database_name, and $database_pass in db.php
+if (! @include_once('db.php')){ // set $database_host, $database_port, $database_name, and $database_pass in db.php
+	warn("Crap. I'm not able to find my database setting. Can you help me, please?");
+}
 
 
 function dbConnection(){
