@@ -1,1 +1,26 @@
-:
+body{
+	font-size: 20px;
+}
+
+div.col-lg-7,
+div.col-lg-2{
+	display: inline;
+}
+
+div.row{
+	margin: 5px;
+	text-align: left;
+}
+
+div.col-lg-7 *,
+div.col-lg-2 *{
+	font-size: 20px;
+	padding: 5px;
+}
+
+form{
+	text-align: center;
+}
+
+
+
