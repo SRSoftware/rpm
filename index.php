@@ -11,15 +11,16 @@ function dbConnection(){
 	$mysqli = new mysqli($database_host, $database_name, $database_pass, $database_name,$database_port);
 	if ($mysqli->connect_errno) return false;
 
-        $mysqli->query("CREATE TABLE users (uid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,name TEXT)");
-        $mysqli->query("CREATE TABLE games (gid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,date DATE,uid INT, comments TEXT)");
-        $mysqli->query("CREATE TABLE user_games (uid INT NOT NULL, gid INT NOT NULL, PRIMARY KEY(uid,gid))");
+        $mysqli->query('CREATE TABLE users (uid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,name TEXT)');
+        $mysqli->query('CREATE TABLE games (gid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,date DATE,uid INT, comments TEXT)');
+        $mysqli->query('CREATE TABLE user_games (uid INT NOT NULL, gid INT NOT NULL, PRIMARY KEY(uid,gid))');
 
         return $mysqli;
 }
 
 function warn($message){
 	print $message;
+	foot();
 	die(-1);
 }
 
@@ -75,11 +76,11 @@ function form(){
   </div>
  
 <?php
-  $players=$mysqli->query("
+  $players=$mysqli->query('
 	SELECT uid,name
 	FROM users NATURAL JOIN user_games
 	GROUP BY uid
-	ORDER BY COUNT(gid) DESC, gid DESC"); // order by frequence and last played
+	ORDER BY COUNT(gid) DESC, gid DESC'); // order by frequence and last played
 
   while ($player= $players->fetch_assoc()){ ?> 
   <div class="row">
@@ -103,16 +104,16 @@ function form(){
 } // function
 
 function invalidQuery($query){
-	warn("was not able to execute query ".$query);
+	warn('was not able to execute query '.$query);
 }
 
 function getOrCreatePlayer($name){
 	global $mysqli;
 
 	// lookup if user name exists
-	$query="SELECT uid FROM users WHERE name = binary ?"; // binary necessary to distinguish between JOE and joe
+	$query='SELECT uid FROM users WHERE name = binary ?'; // binary necessary to distinguish between JOE and joe
 	$statement=$mysqli->prepare($query);
-	$statement->bind_param("s",$name);
+	$statement->bind_param('s',$name);
 	if (!$statement->execute()) invalidQuery($query);
 	$statement->bind_result($uid);
 	if ($statement->fetch()) { // if we get a result: return uid
@@ -121,8 +122,8 @@ function getOrCreatePlayer($name){
 	} 
 
 	// player not existing, yet: create!
-	$query=$mysqli->prepare("INSERT INTO users VALUES (0, ?)");
-	$query->bind_param("s",$name);
+	$query=$mysqli->prepare('INSERT INTO users VALUES (0, ?)');
+	$query->bind_param('s',$name);
 	$query->execute();
 	$query->close();
 	return $mysqli->insert_id;
@@ -130,9 +131,9 @@ function getOrCreatePlayer($name){
 
 function getPlayerName($id){
 	global $mysqli;
-	$query="SELECT name FROM users WHERE uid=?";
+	$query='SELECT name FROM users WHERE uid=?';
 	$statement=$mysqli->prepare($query);
-	$statement->bind_param("i",$id);
+	$statement->bind_param('i',$id);
 	if (!$statement->execute()) invalidQuery($query);
         $statement->bind_result($name);
         if ($statement->fetch()) { // if we get a result: return uid
@@ -154,7 +155,7 @@ function createNewPlayers(){
 			if ($_POST['lost']==$id) $_POST['lost']=$id;
 		}		
 		
-		if (isset($used_ids[$id])) warn("Hey, player ".getPlayerName($id)." is a bit schizophrenic. He's participating manifoldly. I can't stand this.");
+		if (isset($used_ids[$id])) warn('Hey, player '.getPlayerName($id)." seems to be a bit schizophrenic. He's participating manifoldly. I can't stand this.");
 		$used_ids[$id]=true;
 	}
 	if ($changed) $_POST['played']=$played;
@@ -168,7 +169,7 @@ function createGame(){
   $comment=null;
   if (isset($_POST['comment'])) $comment=$_POST['comment'];
 
-  $query=$mysqli->prepare("INSERT INTO games (gid, date, uid, comments) VALUES (0, NOW(), ?, ?)");
+  $query=$mysqli->prepare('INSERT INTO games (gid, date, uid, comments) VALUES (0, NOW(), ?, ?)');
   $query->bind_param('is',$loserId,$comment);
   $query->execute();
   $query->close();
@@ -178,7 +179,7 @@ function createGame(){
 function assignPlayers($game){
   global $mysqli;
 
-  $query=$mysqli->prepare("INSERT INTO user_games (uid, gid) VALUES (?,?)");
+  $query=$mysqli->prepare('INSERT INTO user_games (uid, gid) VALUES (?,?)');
   foreach ($_POST['played'] as $player){
 	$query->bind_param('ii',$player,$game);
 	$query->execute();
@@ -204,10 +205,12 @@ function resultsStored(){
 
 function simpleStat(){
 	global $mysqli;
-	$res=$mysqli->query("SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY uid");
+	$res=$mysqli->query('SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY uid');
 	?> <p><br/><br/> <?php
 	while ($row=$res->fetch_assoc()){
-		print $row['name']." lost ".$row['games']." games, so far.<br/>";
+		print $row['name'].' lost '.$row['games'].' game';
+		if ($row['games']!=1) print 's';
+		print ', so far.<br/>';
 	}
        ?> </p><?php
 }
@@ -219,12 +222,10 @@ $mysqli=dbConnection();
 if ($mysqli===false) warn("Hooray! No database in sight. I'm going to sleep now.");
 
 if (resultsStored()){
-	print "Results stored in database.<br/>";
+	print 'Results stored in database.<br/>';
 } else {
 	print form();
 }
-
-// simpleStat();
 
 foot();
 
