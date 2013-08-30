@@ -173,7 +173,7 @@ head();
 
 $mysqli=dbConnection();
 
-if ($mysqli===false) warnDB();
+if ($mysqli===false) warn("Hooray! No database in sight. I'm going to sleep now.");
 
 if (resultsStored()){
 	print "Results stored in database.<br/>";
