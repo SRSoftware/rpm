@@ -20,6 +20,7 @@ function dbConnection(){
 
 function warn($message){
 	print $message;
+	foot();
 	die(-1);
 }
 
@@ -207,7 +208,9 @@ function simpleStat(){
 	$res=$mysqli->query("SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY uid");
 	?> <p><br/><br/> <?php
 	while ($row=$res->fetch_assoc()){
-		print $row['name']." lost ".$row['games']." games, so far.<br/>";
+		print $row['name'].' lost '.$row['games'].' game';
+		if ($row['games']!=1) print 's';
+		print ', so far.<br/>';
 	}
        ?> </p><?php
 }
@@ -223,8 +226,6 @@ if (resultsStored()){
 } else {
 	print form();
 }
-
-// simpleStat();
 
 foot();
 
