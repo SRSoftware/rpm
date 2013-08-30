@@ -75,7 +75,11 @@ function form(){
   </div>
  
 <?php
-  $players=$mysqli->query("SELECT uid,name FROM users"); // alter here to order with respect to number of games played
+  $players=$mysqli->query("
+	SELECT ui,name
+	FROM users NATURAL JOIN user_games
+	GROUP BY uid
+	ORDER BY COUNT(gid) DESC, gid DESC"); // alter here to order with respect to number of games played
 
   while ($player= $players->fetch_assoc()){ ?> 
   <div class="row">
