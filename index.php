@@ -30,7 +30,7 @@ function head(){
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
       <title>Rock Paper Mensa</title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link href="bootstrap.min.css" rel="stylesheet" media="screen" />
+      <link href="style.css" rel="stylesheet" media="screen" />
       <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
       <!--[if lt IE 9]>
           <script src="bootstrap/js/html5shiv.js"></script>
@@ -60,10 +60,6 @@ function form(){
   <button type="submit" class="btn" disabled>Submit</button>
 
   <div class="row" id="template">
-    <div class="col-lg-7">
-      <input placeholder="Spielername" style="width: 60%"
-	     onkeyup="onName(this)" onchange="onName(this)" />
-    </div>
     <div class="col-lg-2">
       <input name="played[]" type="checkbox" disabled
 	     onchange="onCheckbox(this)" />
@@ -71,6 +67,10 @@ function form(){
     <div class="col-lg-2">
       <input name="lost" type="radio" disabled
 	     onchange="onRadio(this)"/>
+    </div>
+    <div class="col-lg-7">
+      <input placeholder="Spielername" style="width: 60%"
+             onkeyup="onName(this)" onchange="onName(this)" />
     </div>
   </div>
  
@@ -83,7 +83,6 @@ function form(){
 
   while ($player= $players->fetch_assoc()){ ?> 
   <div class="row">
-    <div class="col-lg-7"><?php print $player['name']; ?></div>
     <div class="col-lg-2">
 <?php printf(
       '<input name="played[]" type="checkbox" value="%d" onchange="onCheckbox(this)" />',
@@ -94,6 +93,8 @@ function form(){
       '<input name="lost" type="radio" value="%d" disabled onchange="onRadio(this)"/>',
 					$player['uid']); ?>
     </div>
+    <div class="col-lg-7"><?php print $player['name']; ?></div>
+
   </div>
 <?php   } // end while
 ?>
