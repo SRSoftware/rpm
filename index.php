@@ -216,7 +216,7 @@ function simpleStat(){
 
 head();
 
-if (!isset($_GET['group'])) warn('We like social connections. Every dude should belong to a workgroup or similar. Please append /<groupname>');
+if (!isset($_GET['group'])) warn('We like social connections. Every dude should belong to a workgroup or similar. Please append /&lt;groupname&gt');
 
 $group=strtolower($_GET['group']);
 
