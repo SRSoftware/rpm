@@ -1,6 +1,8 @@
 <?php
 
-require_once('db.php'); // set $database_host, $database_port, $database_name, and $database_pass in db.php
+if (! @include_once('db.php')){ // set $database_host, $database_port, $database_name, and $database_pass in db.php
+	warn("Crap. I'm not able to find my database setting. Can you help me with a db.php file, please?");
+}
 
 
 function dbConnection(){
@@ -192,7 +194,7 @@ head();
 
 $mysqli=dbConnection();
 
-if ($mysqli===false) warnDB();
+if ($mysqli===false) warn("Hooray! No database in sight. I'm going to sleep now.");
 
 if (resultsStored()){
 	print "Results stored in database.<br/>";
@@ -200,7 +202,7 @@ if (resultsStored()){
 	print form();
 }
 
-simpleStat();
+//simpleStat();
 
 foot();
 
