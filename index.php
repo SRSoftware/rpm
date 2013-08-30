@@ -166,7 +166,7 @@ function resultsStored(){
 
 function simpleStat(){
 	global $mysqli;
-	$res=$mysqli->query("SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY name");
+	$res=$mysqli->query("SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY uid");
 	?> <p><br/><br/> <?php
 	while ($row=$res->fetch_assoc()){
 		print $row['name']." lost ".$row['games']." games, so far.<br/>";
