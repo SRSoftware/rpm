@@ -4,16 +4,15 @@ if (! @include_once('db.php')){ // set $database_host, $database_port, $database
 	warn("Crap. I'm not able to find my database setting. Can you help me with a db.php file, please?");
 }
 
-
 function dbConnection(){
-        global $database_host, $database_port, $database_name, $database_pass;
+        global $database_host, $database_port, $database_name, $database_pass, $group;
 
 	$mysqli = new mysqli($database_host, $database_name, $database_pass, $database_name,$database_port);
 	if ($mysqli->connect_errno) return false;
 
-        $mysqli->query('CREATE TABLE users (uid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,name TEXT)');
-        $mysqli->query('CREATE TABLE games (gid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,date DATE,uid INT, comments TEXT)');
-        $mysqli->query('CREATE TABLE user_games (uid INT NOT NULL, gid INT NOT NULL, PRIMARY KEY(uid,gid))');
+	$mysqli->query('CREATE TABLE '.$group.'_users (uid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,name TEXT)');
+	$mysqli->query('CREATE TABLE '.$group.'_games (gid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,date DATE,uid INT, comments TEXT)');
+	$mysqli->query('CREATE TABLE '.$group.'_user_games (uid INT NOT NULL, gid INT NOT NULL, PRIMARY KEY(uid,gid))');
 
         return $mysqli;
 }
@@ -55,9 +54,9 @@ function foot(){ ?>
 }
 
 function form(){
-	global $mysqli;
+	global $mysqli,$group;
 
-?><form class="form" role="form" method="POST" action=".">
+  print '<form class="form" role="form" method="POST" action="'.$group.'">'; ?>
   <button type="submit" class="btn" disabled>Submit</button>
 
   <div class="row" id="template">
@@ -78,7 +77,7 @@ function form(){
 <?php
   $players=$mysqli->query('
 	SELECT uid,name
-	FROM users NATURAL JOIN user_games
+	FROM '.$group.'_users NATURAL JOIN '.$group.'_user_games
 	GROUP BY uid
 	ORDER BY COUNT(gid) DESC, gid DESC'); // order by frequence and last played
 
@@ -108,10 +107,10 @@ function invalidQuery($query){
 }
 
 function getOrCreatePlayer($name){
-	global $mysqli;
+	global $mysqli,$group;
 
 	// lookup if user name exists
-	$query='SELECT uid FROM users WHERE name = binary ?'; // binary necessary to distinguish between JOE and joe
+	$query='SELECT uid FROM '.$group.'_users WHERE name = binary ?'; // binary necessary to distinguish between JOE and joe
 	$statement=$mysqli->prepare($query);
 	$statement->bind_param('s',$name);
 	if (!$statement->execute()) invalidQuery($query);
@@ -122,7 +121,7 @@ function getOrCreatePlayer($name){
 	} 
 
 	// player not existing, yet: create!
-	$query=$mysqli->prepare('INSERT INTO users VALUES (0, ?)');
+	$query=$mysqli->prepare('INSERT INTO '.$group.'_users VALUES (0, ?)');
 	$query->bind_param('s',$name);
 	$query->execute();
 	$query->close();
@@ -130,8 +129,8 @@ function getOrCreatePlayer($name){
 }
 
 function getPlayerName($id){
-	global $mysqli;
-	$query='SELECT name FROM users WHERE uid=?';
+	global $mysqli,$group;
+	$query='SELECT name FROM '.$group.'_users WHERE uid=?';
 	$statement=$mysqli->prepare($query);
 	$statement->bind_param('i',$id);
 	if (!$statement->execute()) invalidQuery($query);
@@ -163,13 +162,13 @@ function createNewPlayers(){
 }
 
 function createGame(){
-  global $mysqli;
+  global $mysqli,$group;
 
   $loserId=$_POST['lost'];
   $comment=null;
   if (isset($_POST['comment'])) $comment=$_POST['comment'];
 
-  $query=$mysqli->prepare('INSERT INTO games (gid, date, uid, comments) VALUES (0, NOW(), ?, ?)');
+  $query=$mysqli->prepare('INSERT INTO '.$group.'_games (gid, date, uid, comments) VALUES (0, NOW(), ?, ?)');
   $query->bind_param('is',$loserId,$comment);
   $query->execute();
   $query->close();
@@ -177,9 +176,9 @@ function createGame(){
 }
 
 function assignPlayers($game){
-  global $mysqli;
+  global $mysqli,$group;
 
-  $query=$mysqli->prepare('INSERT INTO user_games (uid, gid) VALUES (?,?)');
+  $query=$mysqli->prepare('INSERT INTO '.$group.'_user_games (uid, gid) VALUES (?,?)');
   foreach ($_POST['played'] as $player){
 	$query->bind_param('ii',$player,$game);
 	$query->execute();
@@ -204,8 +203,8 @@ function resultsStored(){
 }
 
 function simpleStat(){
-	global $mysqli;
-	$res=$mysqli->query('SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY uid');
+	global $mysqli,$group;
+	$res=$mysqli->query('SELECT COUNT(gid) AS games,name FROM '.$group.'_users NATURAL JOIN '.$group.'_games GROUP BY uid');
 	?> <p><br/><br/> <?php
 	while ($row=$res->fetch_assoc()){
 		print $row['name'].' lost '.$row['games'].' game';
@@ -216,6 +215,12 @@ function simpleStat(){
 }
 
 head();
+
+if (!isset($_GET['group'])) warn('We like social connections. Every dude should belong to a workgroup or similar. Please append /<groupname>');
+
+$group=strtolower($_GET['group']);
+
+if (!ctype_alpha($group)) warn('Whohooo. Your groupname should not contain non-alphabetic characters.');
 
 $mysqli=dbConnection();
 
