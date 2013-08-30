@@ -75,12 +75,11 @@ function form(){
   </div>
  
 <?php
-  $players=$mysqli->query(
-    "SELECT u.uid, u.name
-     FROM users u, user_games g
-     WHERE u.uid == g.uid
-     GROUP BY g.gid
-     ORDER BY COUNT(g.gid) DESC, u.name ASC");
+  $players=$mysqli->query("
+	SELECT uid,name
+	FROM users NATURAL JOIN user_games
+	GROUP BY uid
+	ORDER BY COUNT(gid) DESC, gid DESC"); // order by frequence and last played
 
   while ($player= $players->fetch_assoc()){ ?> 
   <div class="row">
@@ -103,17 +102,25 @@ function form(){
 
 } // function
 
-function createPlayer($name){
+function invalidQuery($query){
+	warn("was not able to execute query ".$query);
+}
+
+function getOrCreatePlayer($name){
 	global $mysqli;
 
 	// lookup if user name exists
-	$query=$mysqli->prepare("SELECT uid FROM users WHERE name == ?");
-	$res = $query->bind_param("s",$name);
-	if ($res->num_rows) {
-	   $row = $res->fetch_assoc();
-	   return $row['id'];
-	}
+	$query="SELECT uid FROM users WHERE name = binary ?"; // binary necessary to distinguish between JOE and joe
+	$statement=$mysqli->prepare($query);
+	$statement->bind_param("s",$name);
+	if (!$statement->execute()) invalidQuery($query);
+	$statement->bind_result($uid);
+	if ($statement->fetch()) { // if we get a result: return uid
+		$statement->close();
+		return $uid;
+	} 
 
+	// player not existing, yet: create!
 	$query=$mysqli->prepare("INSERT INTO users VALUES (0, ?)");
 	$query->bind_param("s",$name);
 	$query->execute();
@@ -121,19 +128,34 @@ function createPlayer($name){
 	return $mysqli->insert_id;
 }
 
+function getPlayerName($id){
+	global $mysqli;
+	$query="SELECT name FROM users WHERE uid=?";
+	$statement=$mysqli->prepare($query);
+	$statement->bind_param("i",$id);
+	if (!$statement->execute()) invalidQuery($query);
+        $statement->bind_result($name);
+        if ($statement->fetch()) { // if we get a result: return uid
+                $statement->close();
+                return $name;
+        }
+	return "unknown";
+}
+
 function createNewPlayers(){
 	$played=$_POST['played'];
 	$changed=false;
 	$used_ids = array();
-	foreach ($played as $number => $player){
-		if (!is_numeric($player)){
-			$id=createPlayer($player);
-			$played[$number]=$id;
+	foreach ($played as $index => $id){
+		if (!is_numeric($id)){
+			$id=getOrCreatePlayer($id);
+			$played[$index]=$id;
 			$changed=true;
-			if ($_POST['lost']==$player) $_POST['lost']=$id;
-		}
-		if (($used_ids[$played[$number]]++) >= 2)
-		  return false;
+			if ($_POST['lost']==$id) $_POST['lost']=$id;
+		}		
+		
+		if (isset($used_ids[$id])) warn("Hey, player ".getPlayerName($id)." is a bit schizophrenic. He's participating manifoldly. I can't stand this.");
+		$used_ids[$id]=true;
 	}
 	if ($changed) $_POST['played']=$played;
 	return true;
@@ -202,7 +224,7 @@ if (resultsStored()){
 	print form();
 }
 
-//simpleStat();
+// simpleStat();
 
 foot();
 
