@@ -49,6 +49,7 @@ function head(){
 <?}
 
 function foot(){ ?>
+      <div class="ad row">Created with PHP, MySQL, JavaScript and CSS. Sources can be downloaded from <a href="https://github.com/SRSoftware/rpm">GitHub</a>.</div>
     </body>
   </html>
 <?php
