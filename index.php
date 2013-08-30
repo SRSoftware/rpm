@@ -76,7 +76,7 @@ function form(){
  
 <?php
   $players=$mysqli->query("
-	SELECT ui,name
+	SELECT uid,name
 	FROM users NATURAL JOIN user_games
 	GROUP BY uid
 	ORDER BY COUNT(gid) DESC, gid DESC"); // alter here to order with respect to number of games played
