@@ -183,7 +183,7 @@ if (resultsStored()){
 	print form();
 }
 
-simpleStat();
+//simpleStat();
 
 foot();
 
