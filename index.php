@@ -75,7 +75,12 @@ function form(){
   </div>
  
 <?php
-  $players=$mysqli->query("SELECT uid,name FROM users"); // alter here to order with respect to number of games played
+  $players=$mysqli->query(
+    "SELECT u.uid, u.name
+     FROM users u, user_games g
+     WHERE u.uid == g.uid
+     GROUP BY g.gid
+     ORDER BY COUNT(g.gid) DESC, u.name ASC");
 
   while ($player= $players->fetch_assoc()){ ?> 
   <div class="row">
@@ -100,6 +105,15 @@ function form(){
 
 function createPlayer($name){
 	global $mysqli;
+
+	// lookup if user name exists
+	$query=$mysqli->prepare("SELECT uid FROM users WHERE name == ?");
+	$res = $query->bind_param("s",$name);
+	if ($res->num_rows) {
+	   $row = $res->fetch_assoc();
+	   return $row['id'];
+	}
+
 	$query=$mysqli->prepare("INSERT INTO users VALUES (0, ?)");
 	$query->bind_param("s",$name);
 	$query->execute();
@@ -110,6 +124,7 @@ function createPlayer($name){
 function createNewPlayers(){
 	$played=$_POST['played'];
 	$changed=false;
+	$used_ids = array();
 	foreach ($played as $number => $player){
 		if (!is_numeric($player)){
 			$id=createPlayer($player);
@@ -117,8 +132,11 @@ function createNewPlayers(){
 			$changed=true;
 			if ($_POST['lost']==$player) $_POST['lost']=$id;
 		}
+		if (($used_ids[$played[$number]]++) >= 2)
+		  return false;
 	}
 	if ($changed) $_POST['played']=$played;
+	return true;
 }
 
 function createGame(){
@@ -149,7 +167,8 @@ function assignPlayers($game){
 function resultsStored(){
 	if (!isset($_POST['lost'])) return false;
 	
-	createNewPlayers();
+	if (!createNewPlayers())
+	  return false;
 	$game=createGame();
 	assignPlayers($game);
 
@@ -163,7 +182,7 @@ function resultsStored(){
 
 function simpleStat(){
 	global $mysqli;
-	$res=$mysqli->query("SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY name");
+	$res=$mysqli->query("SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY uid");
 	?> <p><br/><br/> <?php
 	while ($row=$res->fetch_assoc()){
 		print $row['name']." lost ".$row['games']." games, so far.<br/>";
