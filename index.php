@@ -79,7 +79,7 @@ function form(){
 	SELECT uid,name
 	FROM users NATURAL JOIN user_games
 	GROUP BY uid
-	ORDER BY COUNT(gid) DESC, gid DESC"); // alter here to order with respect to number of games played
+	ORDER BY COUNT(gid) DESC, gid DESC"); // order by frequence and last played
 
   while ($player= $players->fetch_assoc()){ ?> 
   <div class="row">
@@ -102,8 +102,21 @@ function form(){
 
 } // function
 
-function createPlayer($name){
+function getOrCreatePlayer($name){
 	global $mysqli;
+
+	// lookup if user name exists
+	$query="SELECT uid FROM users WHERE name = ?";
+	$statement=$mysqli->prepare($query);
+	$statement->bind_param("s",$name);
+	if (!statement->execute()) warn("was not able to execute query ".$query);
+	$statement->bind_result($uid);
+	if ($statement->fetch()) { // if we get a result: return uid
+		$statement->close();
+		return uid;
+	} 
+
+	// player not existing, yet: create!
 	$query=$mysqli->prepare("INSERT INTO users VALUES (0, ?)");
 	$query->bind_param("s",$name);
 	$query->execute();
@@ -114,6 +127,7 @@ function createPlayer($name){
 function createNewPlayers(){
 	$played=$_POST['played'];
 	$changed=false;
+	$used_ids = array();
 	foreach ($played as $number => $player){
 		if (!is_numeric($player)){
 			$id=createPlayer($player);
@@ -121,8 +135,11 @@ function createNewPlayers(){
 			$changed=true;
 			if ($_POST['lost']==$player) $_POST['lost']=$id;
 		}
+		if (($used_ids[$played[$number]]++) >= 2)
+		  return false;
 	}
 	if ($changed) $_POST['played']=$played;
+	return true;
 }
 
 function createGame(){
@@ -153,7 +170,8 @@ function assignPlayers($game){
 function resultsStored(){
 	if (!isset($_POST['lost'])) return false;
 	
-	createNewPlayers();
+	if (!createNewPlayers())
+	  return false;
 	$game=createGame();
 	assignPlayers($game);
 
@@ -167,7 +185,7 @@ function resultsStored(){
 
 function simpleStat(){
 	global $mysqli;
-	$res=$mysqli->query("SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY name");
+	$res=$mysqli->query("SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY uid");
 	?> <p><br/><br/> <?php
 	while ($row=$res->fetch_assoc()){
 		print $row['name']." lost ".$row['games']." games, so far.<br/>";
