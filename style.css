@@ -15,13 +15,17 @@ div.headbutton{
 }
 
 button{
-  background-color: #006600;
+  background-color: #BBFFBB;
   color: white;
   border-radius: 5px;
   border: 1px solid black;
   float: right;
   margin: 7px;
-  padding: 3px;
+  padding: 4px;
+}
+
+button.btn-success{
+  background-color: #006600;  
 }
 
 div#template{
