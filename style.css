@@ -34,11 +34,12 @@ div#template{
 
 div.col-lg-7,
 div.col-lg-2{
+	padding: 7px;
 	display: inline;
 }
 
 div.row{
-	margin: 5px;
+	padding: 7px;
 	text-align: left;
 }
 
