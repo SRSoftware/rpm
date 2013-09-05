@@ -40,14 +40,12 @@ function head(){
     </head>
     <body>
     
-	<h1>Rock Paper Mensa</h1>
-
       <script type="text/javascript" src="jquery/jquery-2.0.3.min.js"></script>
       <script type="text/javascript" src="form.js"></script>
 <?}
 
 function foot(){ ?>
-      <div class="ad row">Created with PHP, MySQL, JavaScript and CSS. Sources can be downloaded from <a href="https://github.com/SRSoftware/rpm">GitHub</a>.</div>
+      <div class="ad">Created with PHP, MySQL, JavaScript and CSS. Sources can be downloaded from <a href="https://github.com/SRSoftware/rpm">GitHub</a>.</div>
     </body>
   </html>
 <?php
@@ -57,7 +55,10 @@ function form(){
 	global $mysqli;
 
 ?><form class="form" role="form" method="POST" action=".">
-  <button type="submit" class="btn" disabled>Submit</button>
+  <div class="headbutton">
+    <h1>Rock Paper Mensa</h1>
+    <button type="submit" class="btn" disabled>Submit</button>
+  </div>
 
   <div class="row" id="template">
     <div class="col-lg-2">

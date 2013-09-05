@@ -5,9 +5,27 @@
 }
 
 h1{
+	float: left;
         padding: 14px;
-	margin-bottom: 10px;
-	background-color: #99FF99;
+}
+
+div.headbutton{
+  background-color: #DDFFDD;
+  overflow: auto;
+}
+
+button{
+  background-color: #006600;
+  color: white;
+  border-radius: 5px;
+  border: 1px solid black;
+  float: right;
+  margin: 7px;
+  padding: 3px;
+}
+
+div#template{
+	clear: both;
 }
 
 div.col-lg-7,
@@ -20,8 +38,8 @@ div.row{
 	text-align: left;
 }
 
-div.row:nth-child(2n){
-	background-color: #99FF99;
+div.row:nth-child(2n+1){
+	background-color: #DDFFDD;
 }
 
 div.col-lg-7 *,
@@ -34,8 +52,9 @@ form{
 	text-align: center;
 }
 
+a,
 div.ad{
 	margin-top: 20px;
+	color: #a8a8a8;
 }
-
 
