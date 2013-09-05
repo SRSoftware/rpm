@@ -61,7 +61,7 @@ function form(){
 ?><form class="form" role="form" method="POST" action=".">
   <button type="submit" class="btn" disabled>Submit</button>
 
-  <div class="row" id="template">
+  <div class="row odd" id="template">
     <div class="col-lg-2">
       <input name="played[]" type="checkbox" disabled
 	     onchange="onCheckbox(this)" />
@@ -82,9 +82,15 @@ function form(){
 	FROM users NATURAL JOIN user_games
 	GROUP BY uid
 	ORDER BY COUNT(gid) DESC, gid DESC'); // order by frequence and last played
+  $odd=false;
 
-  while ($player= $players->fetch_assoc()){ ?> 
-  <div class="row">
+  while ($player= $players->fetch_assoc()){  
+  print '<div class="row ';
+  if ($odd) {
+    print 'odd';
+  } else print 'even';
+  $odd=!$odd;
+  print '">'; ?>
     <div class="col-lg-2">
 <?php printf(
       '<input name="played[]" type="checkbox" value="%d" onchange="onCheckbox(this)" />',
