@@ -220,7 +220,7 @@ function resultsStored(){
 
 function simpleStat(){
 	global $mysqli;
-	$res=$mysqli->query('SELECT name,losses,count FROM losses NATURAL JOIN participation');
+	$res=$mysqli->query('SELECT name,losses,count FROM losses NATURAL JOIN participation ORDER BY losses/count');
 	?> <p><br/><br/> <?php
 	while ($row=$res->fetch_assoc()){
 		print $row['name'].' lost '.$row['losses'].' of '.$row['count'].' game';
