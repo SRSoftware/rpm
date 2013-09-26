@@ -14,7 +14,16 @@ function dbConnection(){
         $mysqli->query('CREATE TABLE users (uid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,name TEXT)');
         $mysqli->query('CREATE TABLE games (gid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,date DATE,uid INT, comments TEXT)');
         $mysqli->query('CREATE TABLE user_games (uid INT NOT NULL, gid INT NOT NULL, PRIMARY KEY(uid,gid))');
-
+	$mysqli->query('CREATE VIEW participation AS
+			  SELECT name,count(uid) AS count,uid
+                          FROM user_games NATURAL JOIN users
+                          GROUP BY uid
+                          ORDER BY count DESC');
+	$mysqli->query('CREATE VIEW losses AS
+			  SELECT name,count(gid) AS losses,users.uid
+                          FROM games RIGHT JOIN users ON games.uid=users.uid
+                          GROUP BY users.uid
+                          ORDER BY losses DESC');
         return $mysqli;
 }
 
@@ -53,8 +62,13 @@ function foot(){ ?>
 
 function form(){
 	global $mysqli;
+	$action='.';
+        if (isset($_GET['stat']) && $_GET['stat']=='true'){
+          $action='.?stat=true';
+	}
+	
 
-?><form class="form" role="form" method="POST" action=".">
+print '<form class="form" role="form" method="POST" action="'.$action.'">'; ?>
   <div class="headbutton">
     <h1>Rock Paper Mensa</h1>
     <button type="submit" class="btn" disabled>Submit</button>
@@ -206,12 +220,12 @@ function resultsStored(){
 
 function simpleStat(){
 	global $mysqli;
-	$res=$mysqli->query('SELECT COUNT(gid) AS games,name FROM users NATURAL JOIN games GROUP BY uid');
+	$res=$mysqli->query('SELECT name,losses,count FROM losses NATURAL JOIN participation');
 	?> <p><br/><br/> <?php
 	while ($row=$res->fetch_assoc()){
-		print $row['name'].' lost '.$row['games'].' game';
-		if ($row['games']!=1) print 's';
-		print ', so far.<br/>';
+		print $row['name'].' lost '.$row['losses'].' of '.$row['count'].' game';
+		if ($row['count']!=1) print 's';
+		print ' ('.($row['losses']*100/$row['count']).'%), so far.<br/>';
 	}
        ?> </p><?php
 }
@@ -226,6 +240,10 @@ if (resultsStored()){
 	print 'Results stored in database.<br/>';
 } else {
 	print form();
+}
+
+if (isset($_GET['stat']) && $_GET['stat']=='true'){
+  simpleStat();
 }
 
 foot();
