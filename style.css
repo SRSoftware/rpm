@@ -1,0 +1,65 @@
+*{
+	padding: 0;
+	margin: 0;
+	font-size: 20px;
+}
+
+h1{
+	float: left;
+        padding: 14px;
+}
+
+div.headbutton{
+  background-color: #DDFFDD;
+  overflow: auto;
+}
+
+button{
+  background-color: #BBFFBB;
+  color: white;
+  border-radius: 5px;
+  border: 1px solid black;
+  float: right;
+  margin: 7px;
+  padding: 4px;
+}
+
+button.btn-success{
+  background-color: #006600;  
+}
+
+div#template{
+	clear: both;
+}
+
+div.col-lg-7,
+div.col-lg-2{
+	padding: 7px;
+	display: inline;
+}
+
+div.row{
+	padding: 7px;
+	text-align: left;
+}
+
+div.row:nth-child(2n+1){
+	background-color: #DDFFDD;
+}
+
+div.col-lg-7 *,
+div.col-lg-2 *{
+	font-size: 20px;
+	padding: 5px;
+}
+
+form{
+	text-align: center;
+}
+
+a,
+div.ad{
+	margin-top: 20px;
+	color: #a8a8a8;
+}
+
