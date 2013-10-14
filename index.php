@@ -54,7 +54,7 @@ function head(){
 <?}
 
 function foot(){ ?>
-      <div class="ad">Created with PHP, MySQL, JavaScript and CSS. Sources can be downloaded from <a href="https://github.com/SRSoftware/rpm">GitHub</a>.</div>
+      <div class="ad">Created with PHP, MySQL, JavaScript and CSS. Sources can be downloaded from <a href="https://github.com/StephanRichter/rpm">GitHub</a>.</div>
     </body>
   </html>
 <?php
