@@ -27,7 +27,7 @@ function dbConnection(){
         return $mysqli;
 }
 
-function warn($message){
+function warn($message){ 
 	print $message;
 	foot();
 	die(-1);
@@ -234,16 +234,18 @@ function nerdStat() {
   global $mysqli;
 
   // get the number of players per game for all games
-  $res = $mysqli->query('SELECT gid, COUNT(*) AS size FROM user_games GROUP BY uid');
+  $res = $mysqli->query('SELECT gid, COUNT(uid) AS size FROM user_games GROUP BY gid');
   $size = array();
-  while ($row = $res->fetch_assoc())
+  while ($row = $res->fetch_assoc()){
     $size[$row['gid']] = $row['size'];
+  }
 
   // get player names
-  $res = $mysqli->query('SELECT uid, name FROM games');
+  $res = $mysqli->query('SELECT uid, name FROM users');
   $name = array();
-  while ($row = $res->fetch_assoc())
+  while ($row = $res->fetch_assoc()){
     $name[$row['uid']] = $row['name'];
+  }
 
   // iterate over all game participations
   $res = $mysqli->query('SELECT gid, uid FROM user_games');
@@ -254,9 +256,9 @@ function nerdStat() {
     }
     $dist = $userDist[$row['uid']];
     $newdist = array();
-    forearch ($dist as $l => $p) {
-      if (!isset($newdist[$l]  ) $newdist[$l  ] = 0.0;
-      if (!isset($newdist[$l+1]) $newdist[$l+1] = 0.0;
+    foreach ($dist as $l => $p) {
+      if (!isset($newdist[$l]  )) $newdist[$l  ] = 0.0;
+      if (!isset($newdist[$l+1])) $newdist[$l+1] = 0.0;
       $s = $size[$row['gid']];
       $newdist[$l  ] = $newdist[$l  ] + $dist[$l] * ($s-1) / $s;
       $newdist[$l+1] = $newdist[$l+1] + $dist[$l]          / $s;
@@ -265,11 +267,13 @@ function nerdStat() {
   }
 
   // print results
-  foreach ($userDist as $id => $dist) {
-    print '<h3>' + $name[$id] + '</h3>';
+  foreach ($userDist as $id => $dist) { ?>
+    <div class="float"><?php
+    print '<h3>'.$name[$id].'</h3>';
     foreach ($dist as $l => $p) {
-      print $p + ', ';
-    }
+      print $p . '<br/>';
+    } ?>
+    </div><?php
   }
 }
 
@@ -280,14 +284,14 @@ if ($mysqli===false) warn("Hooray! No database in sight. I'm going to sleep now.
 
 if (resultsStored()){
 	print 'Results stored in database.<br/>';
+} else {
+	print form();
 }
 
 if (isset($_GET['stat'])) {
   simpleStat();
 } else if (isset($_GET['nerdstat'])) {
   nerdStat();
-} else {
-  print form();
 }
 
 foot();

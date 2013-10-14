@@ -61,5 +61,13 @@ a,
 div.ad{
 	margin-top: 20px;
 	color: #a8a8a8;
+	clear: left;
 }
 
+.float{
+	float: left;
+	padding: 5px;
+	margin: 5px;
+	border-radius: 5px;
+	background-color: #DDFFDD;
+}
