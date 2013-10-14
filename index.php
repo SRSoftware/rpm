@@ -289,9 +289,12 @@ if (resultsStored()){
 }
 
 if (isset($_GET['stat'])) {
-  simpleStat();
-} else if (isset($_GET['nerdstat'])) {
-  nerdStat();
+  switch ($_GET['stat']){
+    case 'simple':
+      simpleStat(); break;
+    case 'nerd':
+      nerdStat(); break;
+  }
 }
 
 foot();
