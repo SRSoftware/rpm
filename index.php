@@ -233,17 +233,16 @@ function simpleStat(){
 head();
 
 $mysqli=dbConnection();
-
 if ($mysqli===false) warn("Hooray! No database in sight. I'm going to sleep now.");
 
 if (resultsStored()){
 	print 'Results stored in database.<br/>';
-} else {
-	print form();
 }
 
-if (isset($_GET['stat']) && $_GET['stat']=='true'){
+if (isset($_GET['stat'])) {
   simpleStat();
+} else {
+  print form();
 }
 
 foot();
