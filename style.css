@@ -71,3 +71,28 @@ div.ad{
 	border-radius: 5px;
 	background-color: #DDFFDD;
 }
+
+rect{
+    fill: lightgreen
+}
+
+rect.e{
+    fill: green
+}
+
+thead{
+    background-color: lightgreen
+}
+
+th.headerSortUp,
+th.headerSortDown{
+    background-color: green
+}
+
+th.headerSortUp:after{
+    content: " (asc.)"
+}
+
+th.headerSortDown:after{
+    content: " (desc.)"
+}

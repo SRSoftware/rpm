@@ -50,6 +50,7 @@ function head(){
     <body>
     
       <script type="text/javascript" src="jquery/jquery-2.0.3.min.js"></script>
+      <script type="text/javascript" src="jquery/tablesorter.min.js"></script>
       <script type="text/javascript" src="form.js"></script>
 <?}
 
@@ -266,15 +267,63 @@ function nerdStat() {
     $userDist[$row['uid']] = $newdist;
   }
 
-  // print results
-  foreach ($userDist as $id => $dist) { ?>
-    <div class="float"><?php
-    print '<h3>'.$name[$id].'</h3>';
+  // result header
+?><table id="nerdscore" class="tablesorter">
+<thead>
+  <tr>
+    <th>player</th>
+    <th>#games</th>
+    <th>#lost</th>
+    <th>score (min)</th>
+    <th>score (max)</th>
+    <th>dist</th>
+  </tr>
+</thead>
+<tbdoy><?php
+
+  // result rows
+  foreach ($userDist as $id => $dist) {
+    // compute score & dist graph
+    $scoreMin = 0;
+    $scoreMax = 0;
+    $svg = '';
     foreach ($dist as $l => $p) {
-      print $p . '<br/>';
-    } ?>
-    </div><?php
+      $dc = "b";
+      if ($l <= $lost[$id]) { $scoreMax = $scoreMax + $p; $dc = "e"; }
+      if ($l <  $lost[$id]) { $scoreMin = $scoreMin + $p; $dc = "s"; }
+      $svg = $svg . '<rect class="' . $dc
+                      . '" x="' . $l
+                      . '" y="' . (1.0 - $p)
+                      . '" height="' . $p
+                      . '" width="1"  />"';
+
+    }
+
+    // print result row
+    ?>
+  <tr>
+    <td><?=$name[$id] ?></td>
+    <td><?=$lost[$id] ?></td>
+    <td><?=$games[$id] ?></td>
+    <td><?=$scoreMin ?></td>
+    <td><?=$scoreMax ?></td>
+    <td>
+      <svg viewBox="0 0 <?=($l + 1) ?> 1" width="200" height="1em" version="1.1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <?=$svg ?>
+      </svg>
+    </td>
+  </tr><?php
   }
+
+  // result footer
+?></tbody>
+</table>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#nerdscore").tablesorter({headers: {5: {sorter: false}}});
+  });
+</script>
+<?php
 }
 
 head();
