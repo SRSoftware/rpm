@@ -1,0 +1,6 @@
+- add click-cycle: non-participating -> winner -> looser -> non-participating -> ...
+- make name labels clickable
+- mobile: change state on touchend, not click
+  - see https://developers.google.com/mobile/articles/fast_buttons for touchend
+  - see http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
+    to detect touchend capability
