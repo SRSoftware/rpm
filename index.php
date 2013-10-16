@@ -267,6 +267,19 @@ function nerdStat() {
     $userDist[$row['uid']] = $newdist;
   }
 
+
+/*******************/
+
+	$lost=array();
+	$games=array();
+
+        $res=$mysqli->query('SELECT uid,losses FROM losses');
+        ?> <p><br/><br/> <?php
+        while ($row=$res->fetch_assoc()){
+		$lost[$row['uid']]=$row['losses'];
+		$games[$row['uid']]=count($userDist[$row['uid']]);
+        }
+
   // result header
 ?><table id="nerdscore" class="tablesorter">
 <thead>
@@ -305,8 +318,8 @@ function nerdStat() {
     <td><?=$name[$id] ?></td>
     <td><?=$lost[$id] ?></td>
     <td><?=$games[$id] ?></td>
-    <td><?=$scoreMin ?></td>
-    <td><?=$scoreMax ?></td>
+    <td><?=round($scoreMin,3) ?></td>
+    <td><?=round($scoreMax,3) ?></td>
     <td>
       <svg viewBox="0 0 <?=($l + 1) ?> 1" width="200" height="1em" version="1.1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
       <?=$svg ?>
