@@ -285,8 +285,8 @@ function nerdStat() {
 <thead>
   <tr>
     <th>player</th>
-    <th>#games</th>
     <th>#lost</th>
+    <th>#games</th>
     <th>score (min)</th>
     <th>score (max)</th>
     <th>dist</th>
