@@ -64,8 +64,8 @@ function foot(){ ?>
 function form(){
 	global $mysqli;
 	$action='.';
-        if (isset($_GET['stat']) && $_GET['stat']=='true'){
-          $action='.?stat=true';
+        if (isset($_GET['stat'])){
+          $action='.?stat='.$_GET['stat'];
 	}
 	
 
