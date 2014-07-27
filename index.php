@@ -301,7 +301,7 @@ function dynamicStat($mem=9){
 		<td><?php print count($stat[$uid]);?></td>
 		<td><?php print round(end($stat[$uid]),4);?></td>
 		
-		<td><svg viewBox="0 -2 <?=count($stat[$uid]) ?> <?=2+$mem ?>" width="400" height="10em" version="1.1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+		<td><svg viewBox="0 -2 <?=count($stat[$uid]) ?> <?=2+$mem ?>" width="400" height="3em" version="1.1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
 		<?php
 		  $x=0;
 			foreach ($values as $value){
