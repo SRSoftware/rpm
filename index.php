@@ -232,7 +232,7 @@ function simpleStat(){
        ?> </p><?php
 }
 
-function calc_dyn_score(&$stat,&$parts,&$loser,&$game){
+function calc_dyn_score(&$stat,&$parts,&$loser,&$game,$mem){
 	$count=count($parts);
 	if ($count>0){
 		$p=1.0/$count;
@@ -242,43 +242,43 @@ function calc_dyn_score(&$stat,&$parts,&$loser,&$game){
 			} else {
 				$success=$p;
 			}
-			echo "player $uid had success $success<br/>\n";
+//			echo "player $uid had success $success<br/>\n";
 			if (!isset($stat[$uid])){
 				$stat[$uid]=array();
 				$stat[$uid][]=$success;
 			} else {
 				$previous=end($stat[$uid]); // get last aggregated success value
-				print "previous: $previous<br/>\n";
-				if (count($stat[$uid])>1) $previous=$previous/2.0;
-				$stat[$uid][]=$success+$previous;
+//				print "previous: $previous<br/>\n";				
+				$stat[$uid][]=$success+$previous*$mem;
 			}
 		}
 	}
 }
 
-function dynamicStat(){
+function dynamicStat($mem=9){
   global $mysqli;
   $stat=array();
   $res=$mysqli->query('SELECT games.gid AS game,user_games.uid,games.uid AS loser FROM games LEFT JOIN user_games ON games.gid=user_games.gid');
   $lastgame=1;
+  $mem+=1;
+  $weight=1.0-1.0/$mem;
 	$parts=array();
   while ($row=$res->fetch_assoc()){
 		$game=$row['game'];		
 				
 		if ($game>$lastgame){ // if we reach the next game: reset
 			$lastgame=$game;
-			calc_dyn_score($stat,$parts,$loser,$game);		
+			calc_dyn_score($stat,$parts,$loser,$game,$weight);		
 	  	$parts=array();
 		}
 		$uid=$row['uid'];
 		$loser=$row['loser'];
 		$parts[]=$uid;
-		print "game: $game, loser: $loser, player: $uid<br/>\n";		
+		//print "game: $game, loser: $loser, player: $uid<br/>\n";		
 	} // end while
-	calc_dyn_score($stat,$parts,$loser,$game);
+	calc_dyn_score($stat,$parts,$loser,$game,$weight);
 		
 	?>
-	<pre><?php print_r($stat);?></pre>
 	<table id="dynscore" class="tablesorter">
 	<thead>
 	<tr>
@@ -301,7 +301,7 @@ function dynamicStat(){
 		<td><?php print count($stat[$uid]);?></td>
 		<td><?php print round(end($stat[$uid]),4);?></td>
 		
-		<td><svg viewBox="0 -1 <?=count($stat[$uid]) ?> 2" width="400" height="2em" version="1.1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+		<td><svg viewBox="0 -2 <?=count($stat[$uid]) ?> <?=2+$mem ?>" width="400" height="10em" version="1.1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
 		<?php
 		  $x=0;
 			foreach ($values as $value){
@@ -451,7 +451,14 @@ if (isset($_GET['stat'])) {
     case 'nerd':
       nerdStat(); break;
     case 'dyn':
-    	dynamicStat(); break;
+    	$mem=9;
+    	if (isset($_GET['mem'])){				
+    		$dummy=(int)$_GET['mem'];
+    		if ($dummy>=0){
+					$mem=$dummy;
+				}    		
+    	}
+    	dynamicStat($mem); break;
   }
 }
 
