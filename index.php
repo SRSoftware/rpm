@@ -232,6 +232,10 @@ function simpleStat(){
        ?> </p><?php
 }
 
+function dynamicStat(){
+   global $mysqli;
+}
+
 function nerdStat() {
   global $mysqli;
 
@@ -357,6 +361,8 @@ if (isset($_GET['stat'])) {
       simpleStat(); break;
     case 'nerd':
       nerdStat(); break;
+    case 'dyn':
+    	dynamicStat(); break;
   }
 }
 
