@@ -232,6 +232,30 @@ function simpleStat(){
        ?> </p><?php
 }
 
+function calc_dyn_score(&$stat,&$parts,&$loser,&$game){
+	$count=count($parts);
+	if ($count>0){
+		$p=1.0/$count;
+		foreach ($parts as $uid){
+			if ($uid==$loser){
+				$success=$p-1;
+			} else {
+				$success=$p;
+			}
+			echo "player $uid had success $success<br/>\n";
+			if (!isset($stat[$uid])){
+				$stat[$uid]=array();
+				$stat[$uid][]=$success;
+			} else {
+				$previous=end($stat[$uid]); // get last aggregated success value
+				print "previous: $previous<br/>\n";
+				if (count($stat[$uid])>1) $previous=$previous/2.0;
+				$stat[$uid][]=$success+$previous;
+			}
+		}
+	}
+}
+
 function dynamicStat(){
   global $mysqli;
   $stat=array();
@@ -239,42 +263,46 @@ function dynamicStat(){
   $lastgame=1;
 	$parts=array();
   while ($row=$res->fetch_assoc()){
-		$game=$row['game'];
-		
+		$game=$row['game'];		
 				
 		if ($game>$lastgame){ // if we reach the next game: reset
 			$lastgame=$game;
-			$count=count($parts);						
-			if ($count>0){
-				$p=1.0/$count;
-				foreach ($parts as $uid){
-					if ($uid==$loser){
-						$success=$p-1;
-					} else {
-						$success=$p;
-					}
-					echo "player $uid had success $success<br/>\n";
-					if (!isset($stat[$uid])){
-						$stat[$uid]=array();
-						$stat[$uid][]=$success;
-					} else {
-						$previous=end($stat[$uid]); // get last aggregated success value
-						print "previous: $previous<br/>\n";
-						if (count($stat[$uid])>1) $previous=$previous/2.0;
-						$stat[$uid][]=$success+$previous;
-					}
-				}		
-			}						
-			$parts=array();
+			calc_dyn_score($stat,$parts,$loser,$game);		
+	  	$parts=array();
 		}
 		$uid=$row['uid'];
 		$loser=$row['loser'];
 		$parts[]=$uid;
-		print "game: $game, loser: $loser, player: $uid<br/>\n";
-		
-	}	
-		print_r($stat);
-		die();
+		print "game: $game, loser: $loser, player: $uid<br/>\n";		
+	} // end while
+	calc_dyn_score($stat,$parts,$loser,$game);	
+	?>
+	<table id="dynscore" class="tablesorter">
+	<thead>
+	<tr>
+	<th class="header">player</th>
+	<th class="header">#lost</th>
+	<th class="header">#games</th>
+	<th class="header">score</th>
+	</tr>
+	</thead>
+	<tbody>
+ 	<?php 
+ 	foreach ($stat as $uid => $values){
+		$res=$mysqli->query('SELECT * FROM losses WHERE uid='.$uid);
+		$row=$res->fetch_assoc();
+		?>
+		<tr>
+		<td><?php print $row['name']; ?></td>
+		<td><?php print $row['losses']; ?></td>
+		<td><?php print count($stat[$uid]);?></td>
+		<td>bild</td>
+	</tr>	
+	<?php
+	} ?>
+	</tbody>
+	</table>
+	<?php 
 }
 
 function nerdStat() {
