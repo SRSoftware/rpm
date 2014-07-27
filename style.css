@@ -80,6 +80,10 @@ rect.e{
     fill: green
 }
 
+rect.r{
+    fill: red
+}
+
 thead{
     background-color: lightgreen
 }

@@ -275,8 +275,10 @@ function dynamicStat(){
 		$parts[]=$uid;
 		print "game: $game, loser: $loser, player: $uid<br/>\n";		
 	} // end while
-	calc_dyn_score($stat,$parts,$loser,$game);	
+	calc_dyn_score($stat,$parts,$loser,$game);
+		
 	?>
+	<pre><?php print_r($stat);?></pre>
 	<table id="dynscore" class="tablesorter">
 	<thead>
 	<tr>
@@ -284,6 +286,7 @@ function dynamicStat(){
 	<th class="header">#lost</th>
 	<th class="header">#games</th>
 	<th class="header">score</th>
+	<th class="header">development</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -296,7 +299,24 @@ function dynamicStat(){
 		<td><?php print $row['name']; ?></td>
 		<td><?php print $row['losses']; ?></td>
 		<td><?php print count($stat[$uid]);?></td>
-		<td>bild</td>
+		<td><?php print round(end($stat[$uid]),4);?></td>
+		
+		<td><svg viewBox="0 -1 <?=count($stat[$uid]) ?> 2" width="400" height="2em" version="1.1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+		<?php
+		  $x=0;
+			foreach ($values as $value){
+			  if ($value>0){	
+			?>
+				<rect class="e" x="<?php print $x; ?>" y="<?php print -$value; ?>" height="<?php print $value; ?>" width="1"  />
+			<?php } else { ?>
+				<rect class="r" x="<?php print $x; ?>" y="0" height="<?php print -$value; ?>" width="1"  />
+			<?php }
+				$x+=1;				
+			} // foreach
+		?>
+		<line x1="0" y1="0" x2="<?php print count($stat[$uid]); ?>" y2="0" style="stroke:rgb(0,0,0); stroke-width:0.05" />
+		</svg>
+    </td>
 	</tr>	
 	<?php
 	} ?>
