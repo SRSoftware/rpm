@@ -322,6 +322,11 @@ function dynamicStat($mem=9){
 	} ?>
 	</tbody>
 	</table>
+	<script type="text/javascript">
+  $(document).ready(function() {
+    $("#dynscore").tablesorter({headers: {5: {sorter: false}}});
+  });
+</script>
 	<?php 
 }
 
