@@ -14,7 +14,7 @@ function dbConnection(){
         $mysqli->query('CREATE TABLE users (uid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,name TEXT)');
         $mysqli->query('CREATE TABLE games (gid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,date DATE,uid INT, comments TEXT)');
         $mysqli->query('CREATE TABLE user_games (uid INT NOT NULL, gid INT NOT NULL, PRIMARY KEY(uid,gid))');
-	$mysqli->query('CREATE VIEW participation AS
+				$mysqli->query('CREATE VIEW participation AS
 			  SELECT name,count(uid) AS count,uid
                           FROM user_games NATURAL JOIN users
                           GROUP BY uid
@@ -64,12 +64,12 @@ function foot(){ ?>
 function form(){
 	global $mysqli;
 	$action='.';
-        if (isset($_GET['stat'])){
-          $action='.?stat='.$_GET['stat'];
+  if (isset($_GET['stat'])){
+    $action='.?stat='.$_GET['stat'];
 	}
 	
 
-print '<form class="form" role="form" method="POST" action="'.$action.'">'; ?>
+  print '<form class="form" role="form" method="POST" action="'.$action.'">'; ?>
   <div class="headbutton">
     <h1>Rock Paper Mensa</h1>
     <button type="submit" class="btn" disabled>Submit</button>
@@ -117,7 +117,7 @@ print '<form class="form" role="form" method="POST" action="'.$action.'">'; ?>
 </form>
 <?php
 
-} // function
+} // function form
 
 function invalidQuery($query){
 	warn('was not able to execute query '.$query);
@@ -164,16 +164,18 @@ function createNewPlayers(){
 	$changed=false;
 	$used_ids = array();
 	foreach ($played as $index => $id){
-		if (!is_numeric($id)){
-			$id=getOrCreatePlayer($id);
-			$played[$index]=$id;
+		if (!is_numeric($id)){ // if we got a player name:
+			$dbid=getOrCreatePlayer($id); // read id from database or create player if id not found
+			if ($_POST['lost']==$id) $_POST['lost']=$dbid;
+			$id=$dbid;
+			$played[$index]=$id; // set mapping from id to player name
 			$changed=true;
-			if ($_POST['lost']==$id) $_POST['lost']=$id;
 		}		
 		
 		if (isset($used_ids[$id])) warn('Hey, player '.getPlayerName($id)." seems to be a bit schizophrenic. He's participating manifoldly. I can't stand this.");
 		$used_ids[$id]=true;
 	}
+	if (count($played)<2) warn('Wait! How can a game have less than 2 players? You\'re kidding, aren\'t you?');
 	if ($changed) $_POST['played']=$played;
 	return true;
 }
@@ -206,8 +208,7 @@ function assignPlayers($game){
 function resultsStored(){
 	if (!isset($_POST['lost'])) return false;
 	
-	if (!createNewPlayers())
-	  return false;
+	if (!createNewPlayers()) return false;
 	$game=createGame();
 	assignPlayers($game);
 
@@ -273,12 +274,12 @@ function nerdStat() {
 	$lost=array();
 	$games=array();
 
-        $res=$mysqli->query('SELECT uid,losses FROM losses');
-        ?> <p><br/><br/> <?php
-        while ($row=$res->fetch_assoc()){
+  $res=$mysqli->query('SELECT uid,losses FROM losses');
+  ?> <p><br/><br/> <?php
+  while ($row=$res->fetch_assoc()){
 		$lost[$row['uid']]=$row['losses'];
-		$games[$row['uid']]=count($userDist[$row['uid']]);
-        }
+		$games[$row['uid']]=count($userDist[$row['uid']])-1;
+  }
 
   // result header
 ?><table id="nerdscore" class="tablesorter">
