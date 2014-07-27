@@ -30,7 +30,7 @@ function onName(e) {
     }
     $(':checkbox', row)
 	.prop('disabled', !name.length)
-	.prop('checked', false)
+	.prop('checked', true)
 	.change();
     $(':radio, :checkbox', row)
 	.prop('value', name);
