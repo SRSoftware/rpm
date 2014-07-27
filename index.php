@@ -233,7 +233,48 @@ function simpleStat(){
 }
 
 function dynamicStat(){
-   global $mysqli;
+  global $mysqli;
+  $stat=array();
+  $res=$mysqli->query('SELECT games.gid AS game,user_games.uid,games.uid AS loser FROM games LEFT JOIN user_games ON games.gid=user_games.gid');
+  $lastgame=1;
+	$parts=array();
+  while ($row=$res->fetch_assoc()){
+		$game=$row['game'];
+		
+				
+		if ($game>$lastgame){ // if we reach the next game: reset
+			$lastgame=$game;
+			$count=count($parts);						
+			if ($count>0){
+				$p=1.0/$count;
+				foreach ($parts as $uid){
+					if ($uid==$loser){
+						$success=$p-1;
+					} else {
+						$success=$p;
+					}
+					echo "player $uid had success $success<br/>\n";
+					if (!isset($stat[$uid])){
+						$stat[$uid]=array();
+						$stat[$uid][]=$success;
+					} else {
+						$previous=end($stat[$uid]); // get last aggregated success value
+						print "previous: $previous<br/>\n";
+						if (count($stat[$uid])>1) $previous=$previous/2.0;
+						$stat[$uid][]=$success+$previous;
+					}
+				}		
+			}						
+			$parts=array();
+		}
+		$uid=$row['uid'];
+		$loser=$row['loser'];
+		$parts[]=$uid;
+		print "game: $game, loser: $loser, player: $uid<br/>\n";
+		
+	}	
+		print_r($stat);
+		die();
 }
 
 function nerdStat() {
